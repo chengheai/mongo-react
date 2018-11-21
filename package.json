@@ -7,9 +7,17 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "antd": "^3.10.8",
+    "axios": "^0.18.0",
+    "babel-plugin-import": "^1.11.0",
+    "body-parser": "^1.18.2",
     "dva": "^2.4.1",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.10",
+    "nodemon": "^1.18.4",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "require_optional": "^1.0.1"
   },
   "devDependencies": {
     "babel-plugin-dva-hmr": "^0.3.2",
