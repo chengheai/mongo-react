@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import './Login.less';
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
