@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
-import { Link, routerRedux } from 'dva/router';
+import { Link } from 'dva/router';
 import './Login.less';
 const FormItem = Form.Item;
 
