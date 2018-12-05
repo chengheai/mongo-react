@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Table, Button, Layout, Menu, Icon, Drawer, Form, Col, Row, Input, Select, DatePicker, } from 'antd';
+import { Table, Button, Layout, Drawer, Form, Col, Row, Input, Select } from 'antd';
 
 const { Option } = Select;
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Content } = Layout;
 class List extends React.Component {
   constructor(props) {
     super(props);
