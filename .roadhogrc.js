@@ -22,13 +22,6 @@ export default {
           propWhiteList: [],
         }),
       ],
-      "proxy":{
-        "/api":{
-		      "target":"http://localhost:10001",
-          "changeOrigin": true,
-          "pathRewrite": { "^/api" : "" }
-        }
-      }
     },
     production: {
       extraBabelPlugins: [

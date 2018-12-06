@@ -9,7 +9,10 @@ class List extends React.Component {
     super(props);
     this.state = {
       collapsed: false,
-      visible: false
+      visible: false,
+      loading: true,
+      tableData: [],
+      total:0
     };
   }
   toggleCollapsed = () => {
@@ -30,8 +33,31 @@ class List extends React.Component {
   handleChange = (value) => {
     console.log(`Selected: ${value}`);
   }
+  onShowSizeChange = (current, pageSize) => {
+    console.log(current, pageSize);
+  }
+  componentDidMount() {
+   this.getData();
+  }
+  getData() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'heroModel/get_heros',
+      payload: {},
+      callback: res =>{
+        this.setState({
+          tableData: res.data,
+          total: parseInt(res.headers['x-header'])
+        })
+      }
+    })
+    this.setState({
+      loading: false
+    })
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { loading, tableData, total } = this.state;
     const columns = [
       {
         title: '英雄',
@@ -49,7 +75,7 @@ class List extends React.Component {
         title: '性别',
         key: 'sex',
         dataIndex: 'sex',
-        render: sex => (sex === 1 ? '男' : '女'),
+        render: sex => (sex === 'man' ? '汉子' : '妹子'),
         width: 80,
       },
       {
@@ -68,7 +94,7 @@ class List extends React.Component {
         title: '台词',
         key: 'favourite',
         dataIndex: 'favourite',
-        width: 160,
+        width: 250,
       },
       {
         title: '操作',
@@ -92,22 +118,6 @@ class List extends React.Component {
         ),
       },
     ];
-    const data = [];
-    for (let i = 0; i < 100; i++) {
-      data.push({
-        key: i,
-        name: `${i}压缩${i + 'b'}`,
-        nickname: '疾风剑豪',
-        sex: 1,
-        address: '德玛西亚',
-        dowhat: '中单/上单',
-        favourite: '谁说我酒量不好',
-        explain: '亚索的暴击几率翻倍。此外，亚索会在移动时积攒一层护盾。护盾会在他受到来自英雄或野怪的伤害时触发。',
-        created_at: '2018-10-24T06:40:45.405Z',
-        update_at: '2018-10-24T06:40:45.405Z',
-        age: 32,
-      });
-    }
     return (
       <div>
         <Layout style={{ height: '100vh' }}>
@@ -115,23 +125,22 @@ class List extends React.Component {
             <h1 style={{ color: '#fff' }}>LOGO</h1>
             <span style={{ color: '#fff' }}>121</span>
           </Header>
-          <Layout>
             <Content style={{ padding: 20 }}>
               <div style={{ marginBottom: 10 }}>
                 <Button type="primary" icon="plus" onClick={this.showDrawer}>
                   添加
                 </Button>
               </div>
-              <Table columns={columns} dataSource={data} scroll={{ y: 700 }} pagination={{ pageSize: 10 }} />
+              <Table columns={columns} dataSource={tableData} loading={loading} scroll={{ y: 700 }}
+                pagination={{ pageSize: 10,
+                showTotal: () => (<span>总页数: <span>{total}</span></span>), }} />
             </Content>
-          </Layout>
         </Layout>
         <Drawer
           title="添加"
           width={720}
           placement="right"
           onClose={this.onClose}
-          maskClosable={false}
           visible={this.state.visible}
           style={{
             height: 'calc(100% - 55px)',
@@ -199,7 +208,6 @@ class List extends React.Component {
                     <Select
                       mode="tags"
                       placeholder="请选择位置"
-                      defaultValue={['上单', '中单']}
                       onChange={this.handleChange}
                       style={{ width: '100%' }}
                     >
