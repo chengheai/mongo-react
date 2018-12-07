@@ -1,0 +1,24 @@
+.modal {
+  margin: 15px 0 15px 35px;
+  color: rgba(37,48,57,0.60);
+  text-align: center;
+}
+
+:global(.vertical-center-modal) {
+  text-align: center;
+  white-space: nowrap;
+  :global(.ant-modal) {
+    display: inline-block;
+    vertical-align: middle;
+    top: 0;
+    text-align: left;
+  }
+}
+:global(.vertical-center-modal:before) {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  width: 0;
+}
+

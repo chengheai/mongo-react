@@ -5,7 +5,7 @@ const heroSchema = mongoose.Schema({
   nickname : String,
   sex : String,
   address : String,
-  dowhat : String,
+  dowhat : [],
   imgArr:[],
   favourite:String,
   explain:String,

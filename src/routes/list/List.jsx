@@ -1,18 +1,23 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Table, Button, Layout, Drawer, Form, Col, Row, Input, Select } from 'antd';
+import { Table, Button, Layout, message, Modal, Drawer, Form, Col, Row, Input, Select, Tag } from 'antd';
 
 const { Option } = Select;
 const { Header, Content } = Layout;
+const confirm = Modal.confirm;
 class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       collapsed: false,
       visible: false,
+      imgVisible: false,
       loading: true,
       tableData: [],
-      total:0
+      total: 0,
+      imgUrl: '',
+      imgId: '',
+      editForm: {}
     };
   }
   toggleCollapsed = () => {
@@ -23,6 +28,7 @@ class List extends React.Component {
   showDrawer = () => {
     this.setState({
       visible: true,
+      types: 1
     });
   };
   onClose = () => {
@@ -30,6 +36,21 @@ class List extends React.Component {
       visible: false,
     });
   };
+  // pic
+  showImgDrawer = (id) => {
+    console.log(id)
+    this.setState({
+      imgVisible: true,
+      imgId: id
+    })
+  };
+
+  imgClose = () => {
+    this.setState({
+      imgVisible: false,
+    });
+  };
+
   handleChange = (value) => {
     console.log(`Selected: ${value}`);
   }
@@ -37,9 +58,135 @@ class List extends React.Component {
     console.log(current, pageSize);
   }
   componentDidMount() {
-   this.getData();
+    this.getData();
   }
-  getData() {
+  componentDidUpdate() {
+    if(this.state.visible === false) {
+      this.props.form.resetFields();
+    }
+  }
+  //编辑
+  editHandle = (obj) =>{
+    console.log(obj)
+    this.setState({
+      visible: true,
+      types: 2,
+      editForm: obj
+    });
+    this.props.form.setFieldsValue({
+      name: obj.name,
+      nickname: obj.nickname,
+      explain: obj.explain,
+      favourite: obj.favourite,
+      sex: obj.sex,
+      dowhat: obj.dowhat,
+      address: obj.address
+    });
+  }
+  ImputChange = (e) => {
+    // console.log(e.target.value);
+    this.setState({
+      imgUrl: e.target.value
+    })
+  }
+  // 添加图片
+  addPicHandle = () => {
+    let that = this;
+    const { imgUrl, imgId } = that.state;
+    const { dispatch } = this.props;
+    console.log(imgUrl,imgId)
+    if (!imgUrl.trim()) {
+      message.info('图片格式不正确');
+    } else {
+      dispatch({
+        type: 'heroModel/put_add_pic',
+        payload: {
+          id: imgId,
+          url: imgUrl
+        },
+        callback: (res) => {
+          message.success('添加成功');
+          this.setState({
+            imgUrl: '',
+            imgId: '',
+            imgVisible: false
+          })
+        }
+      })
+    }
+  }
+  // 添加
+  handleSubmit = (e) => {
+    let that = this;
+    const { dispatch } = this.props;
+    const { types, editForm } = this.state;
+    e.preventDefault();
+    if(types === 2){
+      this.props.form.validateFields((err, values) => {
+        values = Object.assign(editForm, values);
+      if (!err) {
+        // message.loading('正在添加...');
+        dispatch({
+          type: 'heroModel/put_heros',
+          payload: values,
+          callback: (res) => {
+            message.success('修改成功');
+            this.setState({
+              visible: false,
+              editId: ''
+            });
+            this.props.form.resetFields();
+            that.getData();
+          }
+        })
+      }
+    });
+    } else {
+      this.props.form.validateFields((err, values) => {
+        if (!err) {
+          // message.loading('正在添加...');
+          dispatch({
+            type: 'heroModel/post_hero',
+            payload: values,
+            callback: (res) => {
+              message.success('添加成功');
+              this.setState({
+                visible: false,
+              });
+              this.props.form.resetFields();
+              that.getData();
+            }
+          })
+        }
+      });
+    }
+  }
+  // 删除
+  showDeleteConfirm = (id) => {
+    let that = this;
+    const { dispatch } = this.props;
+    confirm({
+      title: '此操作将永久删除该文件, 是否继续?',
+      okText: '确定',
+      okType: 'primary',
+      cancelText: '取消',
+      onOk() {
+        dispatch({
+          type: 'heroModel/delete_hero',
+          payload: id,
+          callback: (res) => {
+            message.success('删除成功');
+            that.getData();
+          }
+        })
+        console.log(id)
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+  getData = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'heroModel/get_heros',
@@ -47,6 +194,7 @@ class List extends React.Component {
       callback: res =>{
         this.setState({
           tableData: res.data,
+          // eslint-disable-next-line
           total: parseInt(res.headers['x-header'])
         })
       }
@@ -82,13 +230,19 @@ class List extends React.Component {
         title: '籍贯',
         key: 'address',
         dataIndex: 'address',
+        render: address => (address === '0' ? '艾欧尼亚' : address === '1' ? '祖安' : address === '2' ? '雷瑟守备' : address === '3'? '裁决之地' : '黑色玫瑰'),
         width: 150,
       },
       {
         title: '位置',
         key: 'dowhat',
         dataIndex: 'dowhat',
-        width: 120,
+        render: dowhat => (
+          <span>
+            {dowhat.map(tag => <Tag color="geekblue" key={tag}>{tag === '0' ? '上单': tag === '1'? '中单': tag === '2'? '下路': tag === '3'? '辅助': '打野' }</Tag>)}
+          </span>
+        ),
+        width: 180,
       },
       {
         title: '台词',
@@ -105,11 +259,20 @@ class List extends React.Component {
             {
               <span>
                 <Button type="primary">详情</Button>
-                <Button style={{ marginLeft: 5 }}>修改</Button>
-                <Button style={{ marginLeft: 5 }} type="danger">
+                <Button
+                  style={{ marginLeft: 5 }}
+                  onClick={()=>{this.editHandle(record)}}
+                  >修改</Button>
+                <Button
+                  style={{ marginLeft: 5 }}
+                  type="danger"
+                  onClick={() => { this.showDeleteConfirm(record._id)}}
+                  >
                   删除
                 </Button>
-                <Button style={{ marginLeft: 5 }} type="dashed">
+                <Button style={{ marginLeft: 5 }} type="dashed"
+                  onClick={() => {this.showImgDrawer(record._id)}}
+                >
                   添加图片
                 </Button>
               </span>
@@ -123,7 +286,6 @@ class List extends React.Component {
         <Layout style={{ height: '100vh' }}>
           <Header>
             <h1 style={{ color: '#fff' }}>LOGO</h1>
-            <span style={{ color: '#fff' }}>121</span>
           </Header>
             <Content style={{ padding: 20 }}>
               <div style={{ marginBottom: 10 }}>
@@ -136,6 +298,7 @@ class List extends React.Component {
                 showTotal: () => (<span>总页数: <span>{total}</span></span>), }} />
             </Content>
         </Layout>
+        {/* 编辑添加 */}
         <Drawer
           title="添加"
           width={720}
@@ -148,7 +311,7 @@ class List extends React.Component {
             paddingBottom: 53,
           }}
         >
-          <Form layout="vertical" hideRequiredMark>
+          <Form layout="vertical" hideRequiredMark onSubmit={this.handleSubmit}>
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item label="名字">
@@ -168,32 +331,27 @@ class List extends React.Component {
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item label="性别">
-                  {getFieldDecorator('owner', {
+                  {getFieldDecorator('sex', {
                     rules: [{ required: true, message: '请选择性别' }],
                   })(
                     <Select placeholder="请选择性别">
-                      <Option value="1">男</Option>
-                      <Option value="0">女</Option>
+                      <Option value="man">男</Option>
+                      <Option value="woman">女</Option>
                     </Select>
                   )}
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item label="籍贯">
-                  {getFieldDecorator('type', {
+                  {getFieldDecorator('address', {
                     rules: [{ required: true, message: '请选择籍贯' }],
                   })(
                     <Select placeholder="请选择籍贯">
                       <Option value="0">艾欧尼亚</Option>
                       <Option value="1">祖安</Option>
-                      <Option value="2">诺克萨斯</Option>
-                      <Option value="3">班德尔城</Option>
-                      <Option value="4">皮尔吉沃特</Option>
-                      <Option value="5">战争学院</Option>
-                      <Option value="6">巨神峰</Option>
-                      <Option value="7">雷瑟守备</Option>
-                      <Option value="8">裁决之地</Option>
-                      <Option value="9">黑色玫瑰</Option>
+                      <Option value="2">雷瑟守备</Option>
+                      <Option value="3">裁决之地</Option>
+                      <Option value="4">黑色玫瑰</Option>
                     </Select>
                   )}
                 </Form.Item>
@@ -202,7 +360,7 @@ class List extends React.Component {
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item label="位置">
-                  {getFieldDecorator('approver', {
+                  {getFieldDecorator('dowhat', {
                     rules: [{ required: true, message: '请选择位置' }],
                   })(
                     <Select
@@ -213,16 +371,16 @@ class List extends React.Component {
                     >
                       <Option value="0">上单</Option>
                       <Option value="1">中单</Option>
-                      <Option value="2">打野</Option>
+                      <Option value="2">下路</Option>
                       <Option value="3">辅助</Option>
-                      <Option value="4">下路</Option>
+                      <Option value="4">打野</Option>
                     </Select>
                   )}
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item label="台词">
-                {getFieldDecorator('name', {
+                {getFieldDecorator('favourite', {
                     rules: [{ required: true, message: '请输入台词' }],
                   })(<Input placeholder="请输入台词" />)}
                 </Form.Item>
@@ -231,7 +389,7 @@ class List extends React.Component {
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item label="背景故事">
-                  {getFieldDecorator('description', {
+                  {getFieldDecorator('explain', {
                     rules: [
                       {
                         required: true,
@@ -264,7 +422,45 @@ class List extends React.Component {
             >
               取消
             </Button>
-            <Button onClick={this.onClose} type="primary">保存</Button>
+            <Button
+              htmlType="submit"
+              onClick={this.handleSubmit}
+              type="primary">保存</Button>
+          </div>
+        </Drawer>
+        {/* 添加图片 */}
+        <Drawer
+          title="添加图片"
+          placement="bottom"
+          closable={false}
+          onClose={this.imgClose}
+          visible={this.state.imgVisible}
+        >
+         <Input addonBefore="图片地址" onChange={this.ImputChange} defaultValue='' value={this.state.imgUrl} />
+        <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              width: '100%',
+              borderTop: '1px solid #e8e8e8',
+              padding: '10px 16px',
+              textAlign: 'right',
+              left: 0,
+              background: '#fff',
+              borderRadius: '0 0 4px 4px',
+            }}
+          >
+            <Button
+              style={{
+                marginRight: 8,
+              }}
+              onClick={this.imgClose}
+            >
+              取消
+            </Button>
+            <Button
+              onClick={this.addPicHandle}
+              type="primary">确定</Button>
           </div>
         </Drawer>
       </div>
