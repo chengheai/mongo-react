@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Table, Button, Layout, message, Modal, Drawer, Form, Col, Row, Input, Select, Tag } from 'antd';
+import { Link } from 'dva/router';
+
+import { Table, Button, Layout, message, Modal, Drawer, Form, Col, Row, Input, Select, Tag, Icon } from 'antd';
 
 const { Option } = Select;
 const { Header, Content } = Layout;
@@ -17,7 +19,11 @@ class List extends React.Component {
       total: 0,
       imgUrl: '',
       imgId: '',
-      editForm: {}
+      editForm: {},
+      pagination: {
+        currentPage: 1,
+        pageSize: 10,
+      },
     };
   }
   toggleCollapsed = () => {
@@ -186,11 +192,17 @@ class List extends React.Component {
       },
     });
   }
+  // 获取所有
   getData = () => {
     const { dispatch } = this.props;
+    const { pagination, payload } = this.state;
+    const query = {
+      ...pagination,
+      ...payload
+    }
     dispatch({
       type: 'heroModel/get_heros',
-      payload: {},
+      payload: query,
       callback: res =>{
         this.setState({
           tableData: res.data,
@@ -203,9 +215,39 @@ class List extends React.Component {
       loading: false
     })
   }
+  // 翻页
+  handleTableChange = (pagination, filters, sorter) => {
+    console.log(pagination);
+    // let that = this;
+    const { pageSize, current } = pagination;
+    const { dispatch } = this.props;
+    const { payload } = this.state;
+    this.setState({
+      pagination: {
+        currentPage: current,
+        pageSize,
+      },
+    });
+    const query = {
+      ...payload,
+      pageSize,
+      currentPage: current
+    };
+    dispatch({
+      type: 'heroModel/get_heros',
+      payload: query,
+      callback: res => {
+        this.setState({
+          tableData: res.data,
+          // eslint-disable-next-line
+          total: parseInt(res.headers['x-header'])
+        })
+      }
+    });
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, tableData, total } = this.state;
+    const { loading, tableData, total, pagination } = this.state;
     const columns = [
       {
         title: '英雄',
@@ -239,7 +281,10 @@ class List extends React.Component {
         dataIndex: 'dowhat',
         render: dowhat => (
           <span>
-            {dowhat.map(tag => <Tag color="geekblue" key={tag}>{tag === '0' ? '上单': tag === '1'? '中单': tag === '2'? '下路': tag === '3'? '辅助': '打野' }</Tag>)}
+            {dowhat.map(tag => <Tag color="volcano" key={tag}>{tag === '0' ? '上单': tag === '1'? '中单': tag === '2'? '下路': tag === '3'? '辅助': '打野' }</Tag>)}
+            {/* {dowhat.map(tag => {
+              tag === '0'? <Tag color='magenta'>上单</Tag> : tag === '1'? <Tag color='volcano'>中单</Tag> : tag === '2'? <Tag color='geekblue'>下路</Tag> : tag === '3'? <Tag color='purple'>辅助</Tag> : <Tag color='cyan'>打野</Tag>
+            })} */}
           </span>
         ),
         width: 180,
@@ -258,7 +303,9 @@ class List extends React.Component {
           <span>
             {
               <span>
+              <Link to={`/detail/${record._id}`}>
                 <Button type="primary">详情</Button>
+              </Link>
                 <Button
                   style={{ marginLeft: 5 }}
                   onClick={()=>{this.editHandle(record)}}
@@ -285,16 +332,33 @@ class List extends React.Component {
       <div>
         <Layout style={{ height: '100vh' }}>
           <Header>
+            <div style={{display: 'flex',justifyContent: 'space-between', alignItems: 'center'}}>
             <h1 style={{ color: '#fff' }}>LOGO</h1>
+            <Link to='/' style={{color: '#fff'}}>
+              <Icon style={{marginRight: 5}} type="logout" />
+              <span>logout</span>
+            </Link>
+          </div>
           </Header>
-            <Content style={{ padding: 20 }}>
+            <Content style={{ padding: 20, background: '#fff' }}>
               <div style={{ marginBottom: 10 }}>
                 <Button type="primary" icon="plus" onClick={this.showDrawer}>
                   添加
                 </Button>
               </div>
-              <Table columns={columns} dataSource={tableData} loading={loading} scroll={{ y: 700 }}
-                pagination={{ pageSize: 10,
+              <Table
+                columns={columns}
+                dataSource={tableData}
+                loading={loading}
+                scroll={{ y: 700 }}
+                onChange={this.handleTableChange}
+                pagination={{
+                  ...pagination,
+                  total,
+                  currentPage: pagination.currentPage,
+                  // size: 'small',
+                  showQuickJumper: true,
+                  showSizeChanger: true,
                 showTotal: () => (<span>总页数: <span>{total}</span></span>), }} />
             </Content>
         </Layout>

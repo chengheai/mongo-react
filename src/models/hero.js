@@ -1,4 +1,4 @@
-import { get_heros, post_hero, delete_hero, put_heros, put_add_pic } from './../services/hero';
+import { get_heros, post_hero, delete_hero, put_heros, put_add_pic, get_hero_detail } from './../services/hero';
 
 export default {
   namespace: 'heroModel',
@@ -35,6 +35,11 @@ export default {
     },
     *put_add_pic({ payload, callback }, { call }) {
       const response = yield call(put_add_pic, payload);
+      const data = response.data;
+      callback(data);
+    },
+    *get_hero_detail({ payload, callback }, { call }) {
+      const response = yield call(get_hero_detail, payload);
       const data = response.data;
       callback(data);
     }
