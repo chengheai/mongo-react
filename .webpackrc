@@ -4,7 +4,7 @@
  ],
  "proxy":{
     "/":{
-      "target":"http://localhost:8000",
+      "target":"http://http://144.34.148.126:10000",
       "changeOrigin": true
     }
   }
