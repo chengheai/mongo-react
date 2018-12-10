@@ -1,13 +1,18 @@
+import Header from './../../components/Header.jsx';
 import React from 'react'
 import { connect } from 'dva'
 
-import { Carousel } from 'antd';
+import { Carousel, Button } from 'antd';
+import { Link } from 'dva/router';
 
 class Detail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      imgArr: [],
+      name: '',
+      favourite: '',
+      explain: ''
     };
   }
 
@@ -19,18 +24,39 @@ class Detail extends React.Component {
       payload: id,
       callback: (res) => {
         console.log(res);
+        this.setState({
+          imgArr: res.imgArr,
+          explain: res.explain,
+          favourite: res.favourite,
+          name: res.name
+        })
       }
     })
   }
   render() {
+    const { imgArr, explain, favourite, name } = this.state;
     return (
       <div>
-        <Carousel autoplay>
-        <div><h3>1</h3></div>
-        <div><h3>2</h3></div>
-        <div><h3>3</h3></div>
-        <div><h3>4</h3></div>
+      <Header />
+      <div style={{width: 700, textAlign: 'left',margin: '0 auto', marginTop: 20}}><Link to='/list'><Button type='primary'>返回上一页</Button></Link></div>
+      <div style={{margin: '0 auto', width: 700, marginTop: 20}}>
+        <Carousel
+          autoplay
+         >
+          {imgArr.map((item, index) => {
+          console.log(item)
+          return <div style={{width: 700, height: 400}}><img
+            style={{width: 700, height: 400, objectFit: 'cover'}}
+            key={index}
+            src={item}
+          />
+          </div>
+        })}
       </Carousel>
+      <h1 style={{color: '#181e'}}>{name} ******* {favourite}</h1>
+      <h2>被动:</h2>
+      <h3>{explain}</h3>
+      </div>
       </div>
     )
   }

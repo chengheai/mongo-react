@@ -1,11 +1,12 @@
+import Header from './../../components/Header.jsx';
 import React from 'react';
 import { connect } from 'dva';
 import { Link } from 'dva/router';
 
-import { Table, Button, Layout, message, Modal, Drawer, Form, Col, Row, Input, Select, Tag, Icon } from 'antd';
+import { Table, Button, Layout, message, Modal, Drawer, Form, Col, Row, Input, Select, Tag } from 'antd';
 
 const { Option } = Select;
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const confirm = Modal.confirm;
 class List extends React.Component {
   constructor(props) {
@@ -331,15 +332,7 @@ class List extends React.Component {
     return (
       <div>
         <Layout style={{ height: '100vh' }}>
-          <Header>
-            <div style={{display: 'flex',justifyContent: 'space-between', alignItems: 'center'}}>
-            <h1 style={{ color: '#fff' }}>LOGO</h1>
-            <Link to='/' style={{color: '#fff'}}>
-              <Icon style={{marginRight: 5}} type="logout" />
-              <span>logout</span>
-            </Link>
-          </div>
-          </Header>
+          <Header />
             <Content style={{ padding: 20, background: '#fff' }}>
               <div style={{ marginBottom: 10 }}>
                 <Button type="primary" icon="plus" onClick={this.showDrawer}>

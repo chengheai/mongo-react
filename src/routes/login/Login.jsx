@@ -1,21 +1,23 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
-import { Link } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import './Login.less';
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
   state = {
-    userName: 'admin',
-    password: 'admin'
+    userName: 'guest',
+    password: 'guest'
   }
   handleSubmit = (e) => {
+    const { dispatch } = this.props;
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        // dispatch(routerRedux.replace('/list'));
+        dispatch(routerRedux.replace('/list'));
         console.log('Received values of form: ', values);
+        sessionStorage.setItem('guest', values.userName)
       }
     });
   }
@@ -48,7 +50,7 @@ class NormalLoginForm extends React.Component {
             <Checkbox>Remember me</Checkbox>
           )}
           <a className="login-form-forgot" href="" style={{float:"right"}}>Forgot password</a>
-          <Button type="primary" htmlType="submit" className="login-form-button" style={{width:'100%'}}>
+          <Button type="primary" onClick={this.handleSubmit} htmlType="submit" className="login-form-button" style={{width:'100%'}}>
              <Link to={{ pathname: '/list'}}>Log in</Link>
           </Button>
           Or <a href="">register now!</a>
