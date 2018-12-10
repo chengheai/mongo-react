@@ -248,7 +248,7 @@ class List extends React.Component {
   }
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, tableData, total, pagination } = this.state;
+    const { loading, tableData, total, pagination, types } = this.state;
     const columns = [
       {
         title: '英雄',
@@ -310,7 +310,7 @@ class List extends React.Component {
                 <Button
                   style={{ marginLeft: 5 }}
                   onClick={()=>{this.editHandle(record)}}
-                  >修改</Button>
+                  >编辑</Button>
                 <Button
                   style={{ marginLeft: 5 }}
                   type="danger"
@@ -357,7 +357,7 @@ class List extends React.Component {
         </Layout>
         {/* 编辑添加 */}
         <Drawer
-          title="添加"
+          title={ types === 2? '编辑' : '添加'}
           width={720}
           placement="right"
           onClose={this.onClose}
