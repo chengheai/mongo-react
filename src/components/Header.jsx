@@ -11,7 +11,7 @@ const menu = (
       </Link>
     </Menu.Item>
     <Menu.Item>
-      <a target="_blank" href='https://github.com/chengheai/mongo-react'>
+      <a target="_blank" rel ='noopener noreferrer' href='https://github.com/chengheai/mongo-react'>
         <Icon style={{marginRight: 5}} type="github" />
         <span>github</span>
       </a>

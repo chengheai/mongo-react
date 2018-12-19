@@ -16,7 +16,7 @@ class Detail extends React.Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { location, dispatch } = this.props;
     let id = location.pathname.split('/')[2];
     dispatch({
@@ -46,6 +46,7 @@ class Detail extends React.Component {
           {imgArr.map((item, index) => {
           console.log(item)
           return <div style={{width: 850, height: 460}}><img
+            alt='图片加载失败'
             style={{width: 850, height: 460, objectFit: 'cover'}}
             key={index}
             src={item}
@@ -64,7 +65,6 @@ class Detail extends React.Component {
 Detail.propTypes = {
 
 };
-function mapStateToProps({  }) {
-  return { };
+function mapStateToProps() {
 }
 export default connect(mapStateToProps)(Detail)

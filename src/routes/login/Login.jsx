@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import './Login.less';
+import bg from '../../assets/bg.jpg';
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
@@ -24,8 +25,16 @@ class NormalLoginForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { userName, password } = this.state;
+    const sty = {
+      backgroundImage: `url(${bg})`,
+      backgroundSize: 'cover',
+      height: '100%',
+      width: '100%',
+      position: 'relative'
+    }
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form" style={{width: 300,margin: '0 auto',marginTop:100}}>
+      <div style={sty}>
+      <Form onSubmit={this.handleSubmit} className="login-form" style={{width: 300, padding: 15, background: 'darkgray', position: 'absolute', left: '50%', top: '50%', transform: 'translateX(-50%) translateY(-50%)'}}>
         <FormItem>
           {getFieldDecorator('userName', {
             rules: [{ required: true, message: 'Please input your username!' }],
@@ -56,6 +65,7 @@ class NormalLoginForm extends React.Component {
           Or <a href="">register now!</a>
         </FormItem>
       </Form>
+      </div>
     );
   }
 }
