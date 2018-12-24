@@ -10,6 +10,8 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       // eslint-disable-line
+      console.log('history: ', history);
+      console.log('dispatch: ', dispatch);
     },
   },
 
