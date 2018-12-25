@@ -45,10 +45,10 @@ class List extends React.Component {
   };
   // pic
   showImgDrawer = (id) => {
-    console.log(id)
+    console.log(id);
     this.setState({
       imgVisible: true,
-      imgId: id
+      imgId: id,
     })
   };
 
@@ -74,7 +74,7 @@ class List extends React.Component {
   }
   //编辑
   editHandle = (obj) =>{
-    console.log(obj)
+    console.log('obj: ', obj);
     this.setState({
       visible: true,
       types: 2,
@@ -106,7 +106,7 @@ class List extends React.Component {
       message.info('图片格式不正确');
     } else {
       dispatch({
-        type: 'heroModel/put_add_pic',
+        type: 'Hero/put_add_pic',
         payload: {
           id: imgId,
           url: imgUrl
@@ -131,10 +131,11 @@ class List extends React.Component {
     if(types === 2){
       this.props.form.validateFields((err, values) => {
         values = Object.assign(editForm, values);
+        console.log('values: ', values);
       if (!err) {
         // message.loading('正在添加...');
         dispatch({
-          type: 'heroModel/put_heros',
+          type: 'Hero/put_heros',
           payload: values,
           callback: (res) => {
             message.success('修改成功');
@@ -153,7 +154,7 @@ class List extends React.Component {
         if (!err) {
           // message.loading('正在添加...');
           dispatch({
-            type: 'heroModel/post_hero',
+            type: 'Hero/post_hero',
             payload: values,
             callback: (res) => {
               message.success('添加成功');
@@ -179,7 +180,7 @@ class List extends React.Component {
       cancelText: '取消',
       onOk() {
         dispatch({
-          type: 'heroModel/delete_hero',
+          type: 'Hero/delete_hero',
           payload: id,
           callback: (res) => {
             message.success('删除成功');
@@ -202,7 +203,7 @@ class List extends React.Component {
       ...payload
     }
     dispatch({
-      type: 'heroModel/get_heros',
+      type: 'Hero/get_heros',
       payload: query,
       callback: res =>{
         this.setState({
@@ -235,7 +236,7 @@ class List extends React.Component {
       currentPage: current
     };
     dispatch({
-      type: 'heroModel/get_heros',
+      type: 'Hero/get_heros',
       payload: query,
       callback: res => {
         this.setState({
@@ -304,7 +305,7 @@ class List extends React.Component {
           <span>
             {
               <span>
-              <Link to={`/detail/${record._id}`}>
+              <Link to={`/detail?id=${record._id}`}>
                 <Button type="primary">详情</Button>
               </Link>
                 <Button
@@ -494,6 +495,9 @@ class List extends React.Component {
           visible={this.state.imgVisible}
         >
          <Input addonBefore="图片地址" onChange={this.ImputChange} defaultValue='' value={this.state.imgUrl} />
+         <div>
+           {this.state.imgList}
+         </div>
         <div
             style={{
               position: 'absolute',
@@ -526,7 +530,7 @@ class List extends React.Component {
 }
 const ListInfo = Form.create()(List);
 List.propTypes = {};
-function mapStateToProps({ test }) {
-  return { test };
+function mapStateToProps({ Hero }) {
+  return { Hero };
 }
 export default connect(mapStateToProps)(ListInfo);

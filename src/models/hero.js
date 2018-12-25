@@ -1,17 +1,28 @@
-import { get_heros, post_hero, delete_hero, put_heros, put_add_pic, get_hero_detail } from './../services/hero';
-
+import { get_heros, post_hero, delete_hero, put_heros, put_add_pic, get_hero_detail, put_edit_pic } from '../services/hero';
+import queryString from 'query-string';
 export default {
-  namespace: 'heroModel',
+  namespace: 'Hero',
 
   state: {
-    list: [],
+    detail: {},
   },
 
   subscriptions: {
     setup({ dispatch, history }) {
       // eslint-disable-line
-      console.log('history: ', history);
-      console.log('dispatch: ', dispatch);
+      console.log(history)
+      history.listen((location) => {
+        const pathname = location.pathname;
+        let { search } = location;
+        const query = queryString.parse(search);
+        console.log('query: ', query);
+        if(pathname === '/detail') {
+          dispatch({
+            type: 'get_hero_detail',
+            payload: query.id
+          })
+        }
+      })
     },
   },
 
@@ -40,10 +51,28 @@ export default {
       const data = response.data;
       callback(data);
     },
-    *get_hero_detail({ payload, callback }, { call }) {
-      const response = yield call(get_hero_detail, payload);
+    *put_edit_pic({ payload, callback }, { call }) {
+      const response = yield call(put_edit_pic, payload);
       const data = response.data;
       callback(data);
+    },
+    *get_hero_detail({ payload, callback }, { call, put }) {
+      yield put({ type: 'queryHeroDetail', payload: { detail: {} } });
+      const data = yield call(get_hero_detail, payload);
+      console.log('detail:', data.data)
+      if (data) {
+        yield put({
+          type: 'queryHeroDetail',
+          payload: {
+            detail: data.data
+          },
+        })
+      }
     }
   },
+  reducers: {
+    queryHeroDetail(state, action) {
+      return { ...state, ...action.payload, ...action.detail };
+    }
+  }
 };

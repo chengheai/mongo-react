@@ -24,6 +24,10 @@ export async function delete_hero(params) {
 export async function put_add_pic(params) {
   return axios.put(`/api/addpic/${params.id}`, params)
 }
+// 英雄b编辑图片
+export async function put_edit_pic(params) {
+  return axios.put(`/api/editpic/${params.id}`, params)
+}
 
 // 获取单个英雄详情
 export async function get_hero_detail(params) {
