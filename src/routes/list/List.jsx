@@ -20,6 +20,7 @@ class List extends React.Component {
       total: 0,
       imgUrl: '',
       imgId: '',
+      imgList: [],
       editForm: {},
       pagination: {
         currentPage: 1,
@@ -45,7 +46,17 @@ class List extends React.Component {
   };
   // pic
   showImgDrawer = (id) => {
-    console.log(id)
+    console.log(id);
+    this.props.dispatch({
+      type: 'heroModel/get_hero_detail',
+      payload: id,
+      callback: (res) => {
+        console.log(res);
+        this.setState({
+          imgList: res.imgArr
+        })
+      }
+    })
     this.setState({
       imgVisible: true,
       imgId: id
@@ -246,9 +257,29 @@ class List extends React.Component {
       }
     });
   }
+
+  imgHandle = (removedTag) => {
+    console.log(this.state.imgId)
+    const imgList = this.state.imgList.filter(tag => tag !== removedTag);
+    this.setState({ imgList });
+    console.log(imgList);
+    let query = {
+      id: this.state.imgId,
+      imgArr: imgList
+    }
+    this.props.dispatch({
+      type: 'heroModel/put_edit_pic',
+      payload: query,
+      callback: res => {
+        console.log(res);
+        message.success('操作成功');
+        this.setState({ imgList });
+      }
+    })
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading, tableData, total, pagination, types } = this.state;
+    const { loading, tableData, total, pagination, types, imgList } = this.state;
     const columns = [
       {
         title: '英雄',
@@ -487,6 +518,7 @@ class List extends React.Component {
         </Drawer>
         {/* 添加图片 */}
         <Drawer
+          height={320}
           title="添加图片"
           placement="bottom"
           closable={false}
@@ -494,6 +526,13 @@ class List extends React.Component {
           visible={this.state.imgVisible}
         >
          <Input addonBefore="图片地址" onChange={this.ImputChange} defaultValue='' value={this.state.imgUrl} />
+         <div>
+           {imgList? imgList.map((img, index) => {
+              return (
+                <Tag closable afterClose={() => this.imgHandle(img)} style={{width: '100%', height: 20, marginTop: 5}} color="#2db7f5" key={index}>{img}</Tag>
+              )
+           }): ''}
+         </div>
         <div
             style={{
               position: 'absolute',

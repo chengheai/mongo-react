@@ -1,4 +1,4 @@
-import { get_heros, post_hero, delete_hero, put_heros, put_add_pic, get_hero_detail } from './../services/hero';
+import { get_heros, post_hero, delete_hero, put_heros, put_add_pic, get_hero_detail, put_edit_pic } from './../services/hero';
 
 export default {
   namespace: 'heroModel',
@@ -10,8 +10,8 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       // eslint-disable-line
-      console.log('history: ', history);
-      console.log('dispatch: ', dispatch);
+      // console.log('history: ', history);
+      // console.log('dispatch: ', dispatch);
     },
   },
 
@@ -44,6 +44,11 @@ export default {
       const response = yield call(get_hero_detail, payload);
       const data = response.data;
       callback(data);
-    }
+    },
+    *put_edit_pic({ payload, callback }, { call }) {
+      const response = yield call(put_edit_pic, payload);
+      const data = response.data;
+      callback(data);
+    },
   },
 };
