@@ -18,7 +18,7 @@ export default {
         console.log('query: ', query);
         if(pathname === '/detail') {
           dispatch({
-            type: 'get_hero_detail',
+            type: 'get_hero_detail', //在model内不需要加namespace，如果在外面用则需要加
             payload: query.id
           })
         }
