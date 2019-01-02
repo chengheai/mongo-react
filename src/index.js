@@ -1,10 +1,11 @@
 import dva from 'dva';
+import { message } from 'antd';
 import './index.css';
 
 // 1. Initialize
 const app = dva({
   onError(e, dispatch) {
-    console.log(e.message);
+    message.error(`${e.message}` || '接口错误');
   },
 });
 
