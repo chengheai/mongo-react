@@ -9,9 +9,18 @@ const bodyParser = require("body-parser")
 
 
 //这一句是连接上数据库
- var db = mongoose.connect('mongodb://127.0.0.1:27018/reactTest',{ useNewUrlParser: true });
+//  var db = mongoose.connect('mongodb://127.0.0.1:27017/reactTest',{ useNewUrlParser: true });
+// console.log('db:===',db)
+// # mongodb 为协议
+// # james： 连接数据库的用户
+// # 123456: 该用户的密码
+// # localhost: 本地的地址（因为这是本地环境）
+// # 27017: mongodb的端口号(这个一般是默认值，也可以进行修改)
+// # example: 数据库的名字
+var db = 'mongodb://admin:123456@127.0.0.1:27017/reactTest'
 
-//这里的myDbs是数据库的名字，不是表的名字
+// 连接
+mongoose.connect(db);
 
 
 
@@ -32,7 +41,7 @@ app.all('*', function(req, res, next) {
     next();
 });
 // 监听80端口
-app.listen(10005);
-console.log('server is running 10005');
+app.listen(10002);
+console.log('server is running 10002');
 
 
