@@ -17,10 +17,10 @@ const bodyParser = require("body-parser")
 // # localhost: 本地的地址（因为这是本地环境）
 // # 27017: mongodb的端口号(这个一般是默认值，也可以进行修改)
 // # example: 数据库的名字
-var db = 'mongodb://admin:123456@127.0.0.1:27017/reactTest'
+var db = 'mongodb://root:1234@192.168.56.101:27017/reactTest?authMechanism=SCRAM-SHA-1'
 
-// 连接
-mongoose.connect(db);
+// ......
+mongoose.connect(db,{useUnifiedTopology: true, useNewUrlParser: true});
 
 
 

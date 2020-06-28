@@ -1,4 +1,4 @@
-FROM node:9.0-alpine
+FROM node:12.16.3
 RUN mkdir -p /home/project
 WORKDIR /home/project
 COPY . /home/project
