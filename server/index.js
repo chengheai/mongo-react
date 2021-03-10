@@ -1,5 +1,5 @@
 const express = require('express');
-const hero = require('./routers/hero')
+const hero = require('../routers/hero')
 const mongoose = require("mongoose");
 const path = require('path')
 const fs = require('fs')
@@ -17,11 +17,13 @@ const bodyParser = require("body-parser")
 // # localhost: 本地的地址（因为这是本地环境）
 // # 27017: mongodb的端口号(这个一般是默认值，也可以进行修改)
 // # example: 数据库的名字
-var db = 'mongodb://root:1234@192.168.56.101:27017/reactTest?authMechanism=SCRAM-SHA-1'
+// var db = 'mongodb://root:1234@192.168.56.101:27017/reactTest?authMechanism=SCRAM-SHA-1'
 
 // ......
-mongoose.connect(db,{useUnifiedTopology: true, useNewUrlParser: true});
-
+// mongoose.connect(db,{useUnifiedTopology: true, useNewUrlParser: true});
+mongoose.connect("mongodb://localhost:27017/reactTest", {
+  useNewUrlParser: true
+});
 
 
 const app = express()
@@ -41,7 +43,7 @@ app.all('*', function(req, res, next) {
     next();
 });
 // 监听80端口
-app.listen(10002);
-console.log('server is running 10002');
+app.listen(50002);
+console.log('server is running 50002');
 
 

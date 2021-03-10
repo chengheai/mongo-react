@@ -3,7 +3,7 @@
   "scripts": {
     "start": "roadhog server",
     "build": "roadhog build",
-    "server":"node app.js",
+    "server": "node app.js",
     "lint": "eslint --ext .js src test",
     "precommit": "npm run lint"
   },
